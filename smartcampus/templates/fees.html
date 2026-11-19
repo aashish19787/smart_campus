@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}Student fees{% endblock %}
+{% block content %}
+<h1>Student fees</h1>
+{% if current_user['role']=='finance' %}<p><a class="btn" href="{{ url_for('fees.new_fee') }}">New fee record</a></p>{% endif %}
+<div class="card"><form method="get" class="row"><label>Search<input name="q" value="{{ q }}" placeholder="Student ID, name or email"></label>
+<label>Status<select name="status"><option value="">All</option>{% for s in ['Unpaid','Partially Paid','Paid'] %}<option {{ 'selected' if s==status }}>{{ s }}</option>{% endfor %}</select></label>
+<button class="btn secondary" type="submit">Filter</button></form>
+<div class="tablewrap"><table><thead><tr><th>Student</th><th>Fee</th><th>Payable</th><th>Paid</th><th>Outstanding</th><th>Due</th><th>Status</th><th></th></tr></thead><tbody>
+{% for f in rows %}<tr><td>{{ f['student_no'] }}<br>{{ f['student_name'] }}</td><td>{{ f['fee_type'] }}</td><td>{{ f['amount']|money }}</td><td>{{ f['paid']|money }}</td><td>{{ (f['amount']-f['paid'])|money }}</td><td>{{ f['due_date'] }}</td>
+<td><span class="badge {{ 'ok' if f['status']=='Paid' else ('bad' if f['due_date'] < today else 'warn') }}">{{ f['status'] }}</span></td><td><a href="{{ url_for('fees.detail', fid=f['id']) }}">Open</a></td></tr>{% else %}<tr><td colspan="8">No fee records.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

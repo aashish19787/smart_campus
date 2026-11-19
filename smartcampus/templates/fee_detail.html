@@ -1,0 +1,25 @@
+{% extends 'base.html' %}{% block title %}Fee record{% endblock %}
+{% block content %}
+<h1>{{ f['fee_type'] }} – {{ f['student_name'] }} ({{ f['student_no'] }})</h1>
+<div class="stats"><div class="stat"><b>{{ f['amount']|money }}</b><span>Payable</span></div><div class="stat"><b>{{ f['paid']|money }}</b><span>Paid</span></div>
+<div class="stat {{ 'bad' if f['amount']-f['paid'] > 0 }}"><b>{{ (f['amount']-f['paid'])|money }}</b><span>Outstanding</span></div><div class="stat"><b>{{ f['status'] }}</b><span>Due {{ f['due_date'] }}</span></div></div>
+{% if current_user['role']=='finance' %}
+<div class="grid2">
+<div class="card"><h2>Record verified payment</h2>
+{% if f['status']=='Paid' %}<p>This fee is fully paid.</p>{% else %}
+<form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="pay">
+<label>Amount<input type="number" name="amount" step="0.01" min="0.01" max="{{ '%.2f'|format(f['amount']-f['paid']) }}" value="{{ '%.2f'|format(f['amount']-f['paid']) }}" required></label>
+<label>Payment date<input type="date" name="paid_on" value="{{ today }}" max="{{ today }}" required></label>
+<label>Method<select name="method">{% for m in methods %}<option>{{ m }}</option>{% endfor %}</select></label>
+<label>Reference (optional)<input name="reference" maxlength="80"></label>
+<button class="btn" type="submit">Record payment &amp; issue receipt</button></form>{% endif %}</div>
+<div class="card"><h2>Edit fee record</h2><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="edit">
+<label>Fee type<input name="fee_type" value="{{ f['fee_type'] }}" required maxlength="60"></label>
+<label>Payable amount<input type="number" name="amount" step="0.01" min="{{ '%.2f'|format(f['paid'] or 0.01) }}" value="{{ '%.2f'|format(f['amount']) }}" required></label>
+<label>Due date<input type="date" name="due_date" value="{{ f['due_date'] }}" required></label>
+<button class="btn secondary" type="submit">Update</button></form></div>
+</div>{% endif %}
+<div class="card"><h2>Payments</h2><div class="tablewrap"><table><thead><tr><th>Receipt</th><th>Amount</th><th>Date</th><th>Method</th><th>Reference</th><th>Recorded by</th><th></th></tr></thead><tbody>
+{% for p in pays %}<tr><td>{{ p['receipt_no'] }}</td><td>{{ p['amount']|money }}</td><td>{{ p['paid_on'] }}</td><td>{{ p['method'] }}</td><td>{{ p['reference'] }}</td><td>{{ p['staff'] }}</td><td><a href="{{ url_for('fees.receipt', pid=p['id']) }}">Download receipt</a></td></tr>{% else %}<tr><td colspan="7">No payments recorded.</td></tr>{% endfor %}</tbody></table></div>
+<a class="btn secondary" href="{{ url_for('fees.index') }}">Back</a></div>
+{% endblock %}

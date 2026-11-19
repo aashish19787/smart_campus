@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% block title %}{{ 'Edit' if a else 'New' }} assignment{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if a else 'Create' }} assignment</h1>
+<div class="card narrow"><form method="post" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+{% if not a %}<label>Course<select name="course_id" required>{% for c in courses %}<option value="{{ c['id'] }}">{{ c['code'] }} – {{ c['name'] }}</option>{% endfor %}</select></label>{% endif %}
+<label>Title<input name="title" value="{{ a['title'] if a else '' }}" required maxlength="150"></label>
+<label>Description<textarea name="description" rows="5">{{ a['description'] if a else '' }}</textarea></label>
+<label>Publication date &amp; time<input type="datetime-local" name="publish_date" value="{{ (a['publish_date'] if a else now)|dtlocal }}" required></label>
+<label>Deadline<input type="datetime-local" name="deadline" value="{{ (a['deadline'] if a else '')|dtlocal }}" required></label>
+<label>Maximum marks<input type="number" name="max_marks" step="any" min="1" value="{{ (a['max_marks']|num) if a else 100 }}" required></label>
+<label>Attachment (optional){% if a and a['attachment_name'] %} <span class="muted">current: {{ a['attachment_name'] }}</span>{% endif %}<input type="file" name="attachment"></label>
+<button class="btn" type="submit">Save</button> <a class="btn secondary" href="{{ url_for('assignments.index') }}">Cancel</a></form></div>
+{% endblock %}

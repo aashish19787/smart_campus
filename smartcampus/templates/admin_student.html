@@ -1,0 +1,27 @@
+{% extends 'base.html' %}{% block title %}Student {{ st['student_no'] }}{% endblock %}
+{% block content %}
+<h1>{{ st['name'] }} <span class="muted">{{ st['student_no'] }}</span></h1>
+<div class="grid2">
+<div class="card"><h2>Profile &amp; academic record</h2>
+<form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="update">
+<label>Name<input name="name" value="{{ st['name'] }}" required></label>
+<label>Email<input type="email" name="email" value="{{ st['email'] }}" required></label>
+<label>Phone<input name="phone" value="{{ st['phone'] }}"></label>
+<label>Address<input name="address" value="{{ st['address'] }}"></label>
+<label>Program<select name="program_id">{% for p in progs %}<option value="{{ p['id'] }}" {{ 'selected' if p['id']==st['program_id'] }}>{{ p['code'] }} – {{ p['name'] }}</option>{% endfor %}</select></label>
+<label>Enrollment date<input type="date" name="enrollment_date" value="{{ st['enrollment_date'] }}" required></label>
+<label class="check"><input type="checkbox" name="active" value="1" {{ 'checked' if st['active'] }}> Account active</label>
+<button class="btn" type="submit">Save</button> <a class="btn secondary" href="{{ url_for('admin.students') }}">Back</a></form></div>
+<div class="card"><h2>Enrolled courses</h2>
+<div class="tablewrap"><table><thead><tr><th>Course</th><th>Teacher</th><th>Attendance</th></tr></thead><tbody>
+{% for c, s in att %}<tr><td>{{ c['code'] }} – {{ c['name'] }}</td><td>{{ c['teacher'] or '-' }}</td><td>{{ '-' if s.pct is none else '%.1f%%'|format(s.pct) }} ({{ s.total }} sessions)</td></tr>{% else %}<tr><td colspan="3">None.</td></tr>{% endfor %}</tbody></table></div>
+{% if other %}<form method="post" class="row"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="enroll">
+<label>Enroll in<select name="course_id">{% for c in other %}<option value="{{ c['id'] }}">{{ c['code'] }} – {{ c['name'] }}</option>{% endfor %}</select></label><button class="btn small" type="submit">Enroll</button></form>{% endif %}</div>
+</div>
+<div class="grid2">
+<div class="card"><h2>Published results</h2><div class="tablewrap"><table><thead><tr><th>Course</th><th>Exam</th><th>Marks</th><th>Grade</th></tr></thead><tbody>
+{% for r in results %}<tr><td>{{ r['code'] }}</td><td>{{ r['exam_type'] }} {{ r['exam_date'] }}</td><td>{{ r['marks']|num }}/{{ r['max_marks']|num }}</td><td>{{ grade_for(r['marks']/r['max_marks']*100) }}</td></tr>{% else %}<tr><td colspan="4">No published results.</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="card"><h2>Fees</h2><div class="tablewrap"><table><thead><tr><th>Fee</th><th>Amount</th><th>Paid</th><th>Status</th></tr></thead><tbody>
+{% for f in fees %}<tr><td>{{ f['fee_type'] }} (due {{ f['due_date'] }})</td><td>{{ f['amount']|money }}</td><td>{{ f['paid']|money }}</td><td>{{ f['status'] }}</td></tr>{% else %}<tr><td colspan="4">No fee records.</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+{% endblock %}

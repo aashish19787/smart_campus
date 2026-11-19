@@ -1,0 +1,2 @@
+{% extends 'base.html' %}{% block title %}{{ title }}{% endblock %}
+{% block content %}<div class="card narrow"><h1>{{ code }} – {{ title }}</h1><p>{{ msg }}</p><p><a class="btn" href="{{ url_for('auth.dashboard') }}">Back to dashboard</a></p></div>{% endblock %}

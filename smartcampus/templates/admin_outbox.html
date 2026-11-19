@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block title %}E-mail outbox{% endblock %}
+{% block content %}
+<h1>E-mail outbox</h1>
+<p class="muted">Without SMTP configured, e-mails (e.g. password reset links) are recorded here instead of being delivered.</p>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Time</th><th>To</th><th>Subject</th><th>Status</th><th>Body</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{ r['created_at']|dt }}</td><td>{{ r['to_email'] }}</td><td>{{ r['subject'] }}</td><td>{{ r['status'] }}</td><td><pre class="pre">{{ r['body'] }}</pre></td></tr>{% else %}<tr><td colspan="5">No e-mails.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

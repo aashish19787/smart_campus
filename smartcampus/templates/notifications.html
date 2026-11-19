@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block title %}Notifications{% endblock %}
+{% block content %}
+<h1>Notifications</h1>
+<form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn secondary" type="submit">Mark all as read</button></form>
+<div class="card"><ul class="list">
+{% for n in rows %}<li class="{{ '' if n['is_read'] else 'unread' }}">{% if n['link'] %}<a href="{{ n['link'] }}">{{ n['message'] }}</a>{% else %}{{ n['message'] }}{% endif %} <span class="muted">{{ n['created_at']|dt }}</span>
+{% if not n['is_read'] %}<form method="post" class="inline"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ n['id'] }}"><button class="link" type="submit">Mark read</button></form>{% endif %}</li>{% else %}<li>No notifications.</li>{% endfor %}</ul></div>
+{% endblock %}

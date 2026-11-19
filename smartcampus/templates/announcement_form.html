@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}Announcement{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if a else 'New' }} announcement</h1>
+<div class="card narrow"><form method="post" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>Title<input name="title" value="{{ a['title'] if a else '' }}" required maxlength="150"></label>
+<label>Description<textarea name="body" rows="6" required>{{ a['body'] if a else '' }}</textarea></label>
+<label>Category<select name="category">{% for c in cats %}<option {{ 'selected' if a and a['category']==c }}>{{ c }}</option>{% endfor %}</select></label>
+<label>Audience<select name="audience">{% for k, v in audiences.items() %}<option value="{{ k }}" {{ 'selected' if a and a['audience']==k }}>{{ v }}</option>{% endfor %}</select></label>
+<label>Attachment (optional){% if a and a['attachment_name'] %} <span class="muted">current: {{ a['attachment_name'] }}</span>{% endif %}<input type="file" name="attachment"></label>
+{% if not a or a['status']!='published' %}<label class="check"><input type="checkbox" name="publish_now" value="1"> Publish immediately</label>{% endif %}
+<button class="btn" type="submit">Save</button> <a class="btn secondary" href="{{ url_for('comms.announcements') }}">Cancel</a></form></div>
+{% endblock %}

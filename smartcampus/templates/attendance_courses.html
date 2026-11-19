@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block title %}Attendance{% endblock %}
+{% block content %}
+<h1>Attendance</h1>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Course</th><th></th></tr></thead><tbody>
+{% for c in courses %}<tr><td>{{ c['code'] }} – {{ c['name'] }}</td><td>{% if current_user['role']=='teacher' %}<a class="btn small" href="{{ url_for('attendance.take', course_id=c['id']) }}">Record attendance</a> {% endif %}<a class="btn small secondary" href="{{ url_for('attendance.course_summary', course_id=c['id']) }}">Summary</a></td></tr>{% else %}<tr><td colspan="2">No courses assigned.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

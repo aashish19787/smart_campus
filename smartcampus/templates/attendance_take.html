@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% block title %}Record attendance{% endblock %}
+{% block content %}
+<h1>Attendance – {{ course['code'] }} {{ course['name'] }}</h1>
+<div class="card"><form method="get" class="row"><label>Date<input type="date" name="date" value="{{ date }}" max="{{ today }}"></label><button class="btn secondary" type="submit">Load date</button></form>
+{% if sess %}<p class="flash info">A record already exists for {{ date }}. Changes are treated as corrections and require a reason.</p>{% endif %}</div>
+<div class="card"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="date" value="{{ date }}"><input type="hidden" name="save" value="1">
+<div class="tablewrap"><table><thead><tr><th>Student ID</th><th>Name</th>{% for s in statuses %}<th>{{ s }}</th>{% endfor %}</tr></thead><tbody>
+{% for st in students %}<tr><td>{{ st['student_no'] }}</td><td>{{ st['name'] }}</td>
+{% for s in statuses %}<td><input type="radio" name="status_{{ st['id'] }}" value="{{ s }}" aria-label="{{ s }}" {{ 'checked' if existing.get(st['id'])==s }} required></td>{% endfor %}</tr>{% else %}<tr><td colspan="5">No students enrolled.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if sess %}<label>Reason for correction<input name="reason" maxlength="250" required></label>{% endif %}
+{% if students %}<button class="btn" type="submit">{{ 'Save corrections' if sess else 'Submit attendance' }}</button>{% endif %}
+<a class="btn secondary" href="{{ url_for('attendance.course_summary', course_id=course['id']) }}">Summary</a></form></div>
+{% endblock %}

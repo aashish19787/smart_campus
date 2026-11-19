@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block title %}Assignments{% endblock %}
+{% block content %}
+<h1>My assignments</h1>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Course</th><th>Assignment</th><th>Deadline</th><th>Status</th><th>Marks</th></tr></thead><tbody>
+{% for a in rows %}<tr><td>{{ a['code'] }}</td><td><a href="{{ url_for('assignments.view', aid=a['id']) }}">{{ a['title'] }}</a></td><td>{{ a['deadline']|dt }}</td>
+<td>{% if not a['sub_id'] %}<span class="badge {{ 'bad' if a['deadline'] < now else 'warn' }}">Not Submitted</span>{% elif a['is_late'] %}<span class="badge warn">Late</span>{% else %}<span class="badge ok">Submitted</span>{% endif %}</td>
+<td>{% if a['released'] %}{{ a['marks']|num }} / {{ a['max_marks']|num }}{% else %}-{% endif %}</td></tr>{% else %}<tr><td colspan="5">No assignments published yet.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

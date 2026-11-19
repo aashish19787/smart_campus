@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% block title %}My profile{% endblock %}
+{% block content %}
+<h1>My profile</h1>
+<div class="grid2">
+<div class="card"><h2>Personal information</h2>
+  <form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="profile">
+    <label>Name<input name="name" value="{{ current_user['name'] }}" required maxlength="100" {{ 'readonly' if current_user['role']=='student' }}></label>
+    <label>Email<input value="{{ current_user['email'] }}" readonly></label>
+    <label>Phone<input name="phone" value="{{ current_user['phone'] }}" maxlength="30"></label>
+    <label>Address<input name="address" value="{{ current_user['address'] }}" maxlength="250"></label>
+    {% if student %}<p class="muted">Student ID: <b>{{ student['student_no'] }}</b> · Program: {{ student['program'] }} · Enrolled: {{ student['enrollment_date'] }}</p>{% endif %}
+    <button class="btn" type="submit">Save changes</button></form></div>
+<div class="card"><h2>Change password</h2>
+  <form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="password">
+    <label>Current password<input type="password" name="current" required autocomplete="current-password"></label>
+    <label>New password<input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
+    <label>Confirm new password<input type="password" name="confirm" required minlength="8" autocomplete="new-password"></label>
+    <button class="btn" type="submit">Change password</button></form></div>
+</div>
+{% endblock %}

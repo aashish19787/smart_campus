@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block title %}Settings{% endblock %}
+{% block content %}
+<h1>System settings</h1>
+<div class="card narrow"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+{% for k, (d, label) in defs.items() %}<label>{{ label }}<input name="{{ k }}" value="{{ vals[k] }}" required></label>{% endfor %}
+<button class="btn" type="submit">Save settings</button></form></div>
+{% endblock %}

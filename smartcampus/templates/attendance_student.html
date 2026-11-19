@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}Attendance{% endblock %}
+{% block content %}
+<h1>My attendance</h1>
+<div class="stats"><div class="stat"><b>{{ '-' if overall.pct is none else '%.1f%%'|format(overall.pct) }}</b><span>Overall</span></div><div class="stat"><b>{{ thr|num }}%</b><span>Minimum required</span></div></div>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Course</th><th>Present</th><th>Late</th><th>Absent</th><th>Sessions</th><th>Percentage</th><th></th></tr></thead><tbody>
+{% for c, s, low in rows %}<tr><td>{{ c['code'] }} – {{ c['name'] }}</td><td>{{ s.present }}</td><td>{{ s.late }}</td><td>{{ s.absent }}</td><td>{{ s.total }}</td>
+<td>{% if s.pct is none %}-{% else %}<span class="badge {{ 'bad' if low else 'ok' }}">{{ '%.1f'|format(s.pct) }}%</span>{% endif %}</td><td><a href="{{ url_for('attendance.history', course_id=c['id']) }}">History</a></td></tr>{% else %}<tr><td colspan="7">Not enrolled in any course.</td></tr>{% endfor %}
+</tbody></table></div>
+<p><a class="btn secondary" href="{{ url_for('reports.show', kind='attendance', format='pdf') }}">Download PDF</a> <a class="btn secondary" href="{{ url_for('reports.show', kind='attendance', format='csv') }}">Download CSV</a></p></div>
+{% endblock %}

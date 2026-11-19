@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block title %}Reports{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+<div class="card"><ul class="list">{% for k, t in kinds %}<li><a href="{{ url_for('reports.show', kind=k) }}">{{ t }}</a> – <a href="{{ url_for('reports.show', kind=k, format='pdf') }}">PDF</a> · <a href="{{ url_for('reports.show', kind=k, format='csv') }}">CSV</a></li>{% endfor %}</ul></div>
+{% endblock %}

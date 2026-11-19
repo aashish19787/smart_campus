@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block title %}{{ a['title'] }}{% endblock %}
+{% block content %}
+<div class="card"><h1>{{ a['title'] }}</h1>
+<p class="muted">{{ a['category'] }} · For: {{ audiences[a['audience']] }} · {{ (a['publish_date'] or 'Draft')|dt }} · {{ a['author'] }} · <span class="badge {{ 'ok' if a['status']=='published' else 'warn' }}">{{ a['status'] }}</span></p>
+<p class="pre">{{ a['body'] }}</p>
+{% if a['attachment_name'] %}<p>Attachment: <a href="{{ url_for('assignments.download', kind='announcement', fid=a['id']) }}">{{ a['attachment_name'] }}</a></p>{% endif %}
+{% if can_manage %}<p><a class="btn secondary" href="{{ url_for('comms.edit', aid=a['id']) }}">Edit</a>
+{% if a['status']!='published' %}<form method="post" action="{{ url_for('comms.change_status', aid=a['id'], action='publish') }}" class="inline"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn" type="submit">Publish</button></form>{% endif %}
+{% if a['status']=='published' %}<form method="post" action="{{ url_for('comms.change_status', aid=a['id'], action='archive') }}" class="inline" data-confirm="Archive this announcement?"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn secondary" type="submit">Archive</button></form>{% endif %}</p>{% endif %}
+<a href="{{ url_for('comms.announcements') }}">Back to announcements</a></div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% block title %}Courses{% endblock %}
+{% block content %}
+<h1>{{ 'Courses' if current_user['role']=='admin' else 'My courses' }}</h1>
+{% if current_user['role']=='admin' %}
+<div class="card"><h2>Create course</h2><form method="post" class="row"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>Code<input name="code" required maxlength="20"></label><label>Name<input name="name" required maxlength="100"></label>
+<label>Program<select name="program_id"><option value="">—</option>{% for p in progs %}<option value="{{ p['id'] }}">{{ p['code'] }}</option>{% endfor %}</select></label>
+<label>Teacher<select name="teacher_id"><option value="">— unassigned —</option>{% for t in teachers %}<option value="{{ t['id'] }}">{{ t['name'] }}</option>{% endfor %}</select></label>
+<label>Semester<input name="semester" maxlength="30" placeholder="Semester 1"></label><button class="btn" type="submit">Create</button></form></div>
+{% endif %}
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Code</th><th>Course</th><th>Program</th><th>Teacher</th><th>Semester</th><th>Students</th>{% if current_user['role']=='admin' %}<th></th>{% endif %}</tr></thead><tbody>
+{% for c in rows %}<tr><td>{{ c['code'] }}</td><td>{{ c['name'] }}</td><td>{{ c['program'] or '-' }}</td><td>{{ c['teacher'] or '-' }}</td><td>{{ c['semester'] }}</td><td>{{ c['n'] }}</td>{% if current_user['role']=='admin' %}<td><a href="{{ url_for('admin.course_detail', cid=c['id']) }}">Manage</a></td>{% endif %}</tr>{% else %}<tr><td colspan="7">No courses.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

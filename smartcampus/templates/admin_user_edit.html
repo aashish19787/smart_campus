@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}Edit user{% endblock %}
+{% block content %}
+<h1>Edit account</h1>
+<div class="card narrow"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>Name<input name="name" value="{{ u['name'] }}" required maxlength="100"></label>
+<label>Email<input type="email" name="email" value="{{ u['email'] }}" required></label>
+<label>Role<select name="role">{% for k, v in role_names.items() if k != 'student' %}<option value="{{ k }}" {{ 'selected' if k==u['role'] }}>{{ v }}</option>{% endfor %}</select></label>
+<label>Phone<input name="phone" value="{{ u['phone'] }}" maxlength="30"></label>
+<label class="check"><input type="checkbox" name="active" value="1" {{ 'checked' if u['active'] }}> Account active</label>
+<label>Reset password (optional)<input type="password" name="password" minlength="8" autocomplete="new-password"></label>
+<button class="btn" type="submit">Save</button> <a class="btn secondary" href="{{ url_for('admin.users') }}">Cancel</a></form></div>
+{% endblock %}

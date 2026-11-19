@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block title %}Users{% endblock %}
+{% block content %}
+<h1>User accounts</h1>
+<div class="card"><h2>Create staff account</h2>
+<form method="post" class="row"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <label>Name<input name="name" required maxlength="100"></label>
+  <label>Email<input type="email" name="email" required></label>
+  <label>Role<select name="role" required>{% for k, v in role_names.items() if k != 'student' %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select></label>
+  <label>Phone<input name="phone" maxlength="30"></label>
+  <label>Initial password<input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
+  <button class="btn" type="submit">Create</button></form>
+<p class="muted">Students are registered under <a href="{{ url_for('admin.students') }}">Students</a>.</p></div>
+<div class="card"><form method="get" class="row"><label>Search<input name="q" value="{{ q }}" placeholder="name or email"></label>
+<label>Role<select name="role"><option value="">All</option>{% for k, v in role_names.items() %}<option value="{{ k }}" {{ 'selected' if k==role }}>{{ v }}</option>{% endfor %}</select></label>
+<button class="btn secondary" type="submit">Filter</button></form>
+<div class="tablewrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>
+{% for u in rows %}<tr><td>{{ u['name'] }}</td><td>{{ u['email'] }}</td><td>{{ role_names[u['role']] }}</td><td><span class="badge {{ 'ok' if u['active'] else 'bad' }}">{{ 'Active' if u['active'] else 'Inactive' }}</span></td><td><a href="{{ url_for('admin.user_edit', uid=u['id']) }}">Edit</a></td></tr>{% else %}<tr><td colspan="5">No users found.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

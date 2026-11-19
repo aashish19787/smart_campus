@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% block title %}{{ a['title'] }}{% endblock %}
+{% block content %}
+<h1>{{ a['title'] }}</h1>
+<div class="card"><p class="muted">{{ a['code'] }} – {{ a['course_name'] }} · Deadline: <b>{{ a['deadline']|dt }}</b> · Max marks: {{ a['max_marks']|num }}</p>
+<p class="pre">{{ a['description'] }}</p>
+{% if a['attachment_name'] %}<p>Attachment: <a href="{{ url_for('assignments.download', kind='assignment', fid=a['id']) }}">{{ a['attachment_name'] }}</a></p>{% endif %}</div>
+<div class="card"><h2>Your submission – <span class="badge {{ {'Submitted':'ok','Late':'warn','Not Submitted':'bad'}[status] }}">{{ status }}</span></h2>
+{% if sub %}<p>File: <a href="{{ url_for('assignments.download', kind='submission', fid=sub['id']) }}">{{ sub['file_name'] }}</a> · submitted {{ sub['submitted_at']|dt }}</p>
+{% if sub['released'] %}<p><b>Marks: {{ sub['marks']|num }} / {{ a['max_marks']|num }}</b></p><p><b>Feedback:</b> {{ sub['feedback'] or '—' }}</p>{% else %}<p class="muted">Marks and feedback will appear here once released by your teacher.</p>{% endif %}{% endif %}
+{% if not (sub and sub['released']) %}
+<form method="post" action="{{ url_for('assignments.submit', aid=a['id']) }}" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>{{ 'Replace your file' if sub else 'Upload your file' }}<input type="file" name="file" required></label>
+{% if a['deadline'] < now %}<p class="flash error">The deadline has passed; your submission will be marked Late.</p>{% endif %}
+<button class="btn" type="submit">Submit</button></form>{% endif %}</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<div class="card"><form method="get" class="row">
+{% if kind=='attendance' %}<label>Course<select name="course"><option value="">All</option>{% for c in courses %}<option value="{{ c['id'] }}" {{ 'selected' if args.get('course')==c['id']|string }}>{{ c['code'] }}</option>{% endfor %}</select></label>
+{% if current_user['role']!='student' %}<label>Student<input name="student" value="{{ args.get('student','') }}" placeholder="ID or name"></label>{% endif %}
+<label>From<input type="date" name="from" value="{{ args.get('from','') }}"></label><label>To<input type="date" name="to" value="{{ args.get('to','') }}"></label>{% endif %}
+{% if kind=='results' %}<label>Exam<select name="exam"><option value="">All</option>{% for e in exams %}<option value="{{ e['id'] }}" {{ 'selected' if args.get('exam')==e['id']|string }}>{{ e['code'] }} {{ e['exam_type'] }} {{ e['exam_date'] }}</option>{% endfor %}</select></label>{% endif %}
+{% if kind=='fees' %}<label>Status<select name="status"><option value="">All</option>{% for s in ['Unpaid','Partially Paid','Paid'] %}<option {{ 'selected' if args.get('status')==s }}>{{ s }}</option>{% endfor %}</select></label>{% endif %}
+<button class="btn secondary" type="submit">Apply</button>
+<a class="btn" href="{{ url_for('reports.show', kind=kind, format='pdf', **args.to_dict()) }}">Download PDF</a>
+<a class="btn" href="{{ url_for('reports.show', kind=kind, format='csv', **args.to_dict()) }}">Download CSV</a></form>
+{% if sub %}<p class="muted">{{ sub }}</p>{% endif %}
+<div class="tablewrap"><table><thead><tr>{% for h in headers %}<th>{{ h }}</th>{% endfor %}</tr></thead><tbody>
+{% for r in rows %}<tr>{% for c in r %}<td>{{ c }}</td>{% endfor %}</tr>{% else %}<tr><td colspan="{{ headers|length }}">No records.</td></tr>{% endfor %}</tbody></table></div>
+{% if total > rows|length %}<p class="muted">Showing {{ rows|length }} of {{ total }} rows – download for the full report.</p>{% endif %}</div>
+{% endblock %}

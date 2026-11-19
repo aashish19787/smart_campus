@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}My fees{% endblock %}
+{% block content %}
+<h1>My fees</h1>
+<div class="stats"><div class="stat {{ 'bad' if outstanding > 0 }}"><b>{{ outstanding|money }}</b><span>Outstanding balance</span></div></div>
+<div class="card"><h2>Fee records</h2><div class="tablewrap"><table><thead><tr><th>Fee</th><th>Payable</th><th>Paid</th><th>Balance</th><th>Due</th><th>Status</th></tr></thead><tbody>
+{% for f in rows %}<tr><td>{{ f['fee_type'] }}</td><td>{{ f['amount']|money }}</td><td>{{ f['paid']|money }}</td><td>{{ (f['amount']-f['paid'])|money }}</td><td>{{ f['due_date'] }}</td>
+<td><span class="badge {{ 'ok' if f['status']=='Paid' else ('bad' if f['due_date'] < today else 'warn') }}">{{ f['status'] }}</span></td></tr>{% else %}<tr><td colspan="6">No fee records.</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="card"><h2>Payment history</h2><div class="tablewrap"><table><thead><tr><th>Receipt</th><th>Fee</th><th>Amount</th><th>Date</th><th>Method</th><th></th></tr></thead><tbody>
+{% for p in pays %}<tr><td>{{ p['receipt_no'] }}</td><td>{{ p['fee_type'] }}</td><td>{{ p['amount']|money }}</td><td>{{ p['paid_on'] }}</td><td>{{ p['method'] }}</td><td><a href="{{ url_for('fees.receipt', pid=p['id']) }}">Receipt PDF</a></td></tr>{% else %}<tr><td colspan="6">No payments yet.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

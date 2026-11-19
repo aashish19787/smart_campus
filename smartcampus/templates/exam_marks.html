@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% block title %}Marks{% endblock %}
+{% block content %}
+<h1>{{ e['code'] }} {{ e['exam_type'] }} – marks</h1>
+<p class="muted">{{ e['course_name'] }} · {{ e['exam_date'] }} · Maximum {{ e['max_marks']|num }} · Status: <span class="badge {{ 'ok' if e['status']=='published' else 'warn' }}">{{ e['status'] }}</span> · {{ missing }} student(s) without marks</p>
+<div class="card"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<div class="tablewrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Marks</th><th>%</th><th>Grade</th></tr></thead><tbody>
+{% for s, m, pct, gr in rows %}<tr><td>{{ s['student_no'] }}</td><td>{{ s['name'] }}</td>
+<td>{% if can_edit %}<input type="number" name="marks_{{ s['id'] }}" step="any" min="0" max="{{ e['max_marks'] }}" value="{{ m|num if m is not none else '' }}" class="w-sm" aria-label="Marks for {{ s['name'] }}">{% else %}{{ m|num }}{% endif %}</td>
+<td>{{ '-' if pct is none else '%.1f'|format(pct) }}</td><td>{{ gr or '-' }}</td></tr>{% else %}<tr><td colspan="5">No students enrolled.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if can_edit %}<label>Reason for corrections (required when changing existing marks)<input name="reason" maxlength="250"></label><button class="btn" type="submit">Save marks</button>{% endif %}
+<a class="btn secondary" href="{{ url_for('exams.index') }}">Back</a></form></div>
+<div class="card"><h2>Mark change history</h2><div class="tablewrap"><table><thead><tr><th>Time</th><th>Student</th><th>Old</th><th>New</th><th>By</th><th>Reason</th></tr></thead><tbody>
+{% for h in history %}<tr><td>{{ h['changed_at']|dt }}</td><td>{{ h['student_no'] }} {{ h['student'] }}</td><td>{{ h['old_marks']|num }}</td><td>{{ h['new_marks']|num }}</td><td>{{ h['by'] }}</td><td>{{ h['reason'] }}</td></tr>{% else %}<tr><td colspan="6">No changes recorded.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

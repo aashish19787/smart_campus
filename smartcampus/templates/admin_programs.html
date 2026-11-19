@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block title %}Programs{% endblock %}
+{% block content %}
+<h1>Academic programs</h1>
+<div class="card"><h2>Add program</h2><form method="post" class="row"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>Code<input name="code" required maxlength="20" placeholder="BIT"></label><label>Name<input name="name" required maxlength="100" placeholder="Bachelor of Information Technology"></label>
+<button class="btn" type="submit">Add</button></form></div>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Code</th><th>Name</th><th>Students</th><th>Courses</th><th>Rename</th></tr></thead><tbody>
+{% for p in rows %}<tr><td colspan="5"><form method="post" class="row tight"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="id" value="{{ p['id'] }}">
+<input name="code" value="{{ p['code'] }}" required maxlength="20" class="w-sm"><input name="name" value="{{ p['name'] }}" required maxlength="100"><span class="muted">{{ p['students'] }} students · {{ p['courses'] }} courses</span><button class="btn small secondary" type="submit">Save</button></form></td></tr>{% else %}<tr><td colspan="5">No programs yet.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

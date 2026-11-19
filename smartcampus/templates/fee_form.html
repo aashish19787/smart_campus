@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block title %}New fee{% endblock %}
+{% block content %}
+<h1>New fee record</h1>
+<div class="card narrow"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>Student ID<input name="student_no" placeholder="HCIT-2026-0001"></label>
+<label>…or all students of program<select name="program_id"><option value="">— none —</option>{% for p in progs %}<option value="{{ p['id'] }}">{{ p['code'] }} – {{ p['name'] }}</option>{% endfor %}</select></label>
+<label>Fee type<input name="fee_type" list="ft" required maxlength="60"><datalist id="ft"><option>Tuition</option><option>Examination</option><option>Admission</option><option>Lab</option><option>Library</option></datalist></label>
+<label>Payable amount<input type="number" name="amount" step="0.01" min="0.01" required></label>
+<label>Due date<input type="date" name="due_date" value="{{ today }}" required></label>
+<button class="btn" type="submit">Create</button> <a class="btn secondary" href="{{ url_for('fees.index') }}">Cancel</a></form></div>
+{% endblock %}

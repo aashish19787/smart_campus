@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block title %}{{ a['title'] }}{% endblock %}
+{% block content %}
+<h1>{{ a['title'] }}</h1>
+<div class="card"><p class="muted">{{ a['code'] }} – {{ a['course_name'] }} · Published {{ a['publish_date']|dt }} · Deadline {{ a['deadline']|dt }} · Max marks {{ a['max_marks']|num }}</p>
+<p class="pre">{{ a['description'] }}</p>
+{% if a['attachment_name'] %}<p>Attachment: <a href="{{ url_for('assignments.download', kind='assignment', fid=a['id']) }}">{{ a['attachment_name'] }}</a></p>{% endif %}
+{% if current_user['role']=='teacher' %}<a class="btn secondary" href="{{ url_for('assignments.edit', aid=a['id']) }}">Edit</a>
+<form method="post" action="{{ url_for('assignments.delete', aid=a['id']) }}" class="inline" data-confirm="Delete this assignment and all its submissions?"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn danger" type="submit">Delete</button></form>{% endif %}</div>
+<div class="card"><h2>Submissions</h2><div class="tablewrap"><table><thead><tr><th>Student</th><th>Status</th><th>File</th><th>Evaluation</th></tr></thead><tbody>
+{% for st, s in roster %}<tr><td>{{ st['student_no'] }}<br>{{ st['name'] }}</td>
+<td><span class="badge {{ {'Submitted':'ok','Late':'warn','Not Submitted':'bad'}[status_of(s)] }}">{{ status_of(s) }}</span>{% if s %}<br><span class="muted">{{ s['submitted_at']|dt }}</span>{% endif %}</td>
+<td>{% if s %}<a href="{{ url_for('assignments.download', kind='submission', fid=s['id']) }}">{{ s['file_name'] }}</a>{% else %}-{% endif %}</td>
+<td>{% if s and current_user['role']=='teacher' %}<form method="post" action="{{ url_for('assignments.grade', sid=s['id']) }}" class="row tight"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<input type="number" name="marks" step="any" min="0" max="{{ a['max_marks'] }}" value="{{ s['marks']|num if s['marks'] is not none else '' }}" required class="w-sm" aria-label="Marks">
+<input name="feedback" value="{{ s['feedback'] }}" placeholder="Feedback" maxlength="2000" aria-label="Feedback">
+<label class="check"><input type="checkbox" name="release" value="1" {{ 'checked' if s['released'] or s['marks'] is none }}> Release</label><button class="btn small" type="submit">Save</button></form>
+{% elif s %}{{ s['marks']|num }} {{ '(released)' if s['released'] }}{% else %}-{% endif %}</td></tr>{% else %}<tr><td colspan="4">No students enrolled.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

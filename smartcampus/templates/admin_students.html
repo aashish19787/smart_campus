@@ -1,0 +1,22 @@
+{% extends 'base.html' %}{% block title %}Students{% endblock %}
+{% block content %}
+<h1>Students</h1>
+<div class="card"><h2>Register student</h2>
+{% if not progs %}<p class="flash error">Create an academic program first.</p>{% endif %}
+<form method="post" class="row"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+<label>Full name<input name="name" required maxlength="100"></label>
+<label>Email<input type="email" name="email" required></label>
+<label>Phone<input name="phone" maxlength="30"></label>
+<label>Address<input name="address" maxlength="250"></label>
+<label>Program<select name="program_id" required>{% for p in progs %}<option value="{{ p['id'] }}">{{ p['code'] }} – {{ p['name'] }}</option>{% endfor %}</select></label>
+<label>Enrollment date<input type="date" name="enrollment_date" value="{{ today }}" required></label>
+<label>Initial password<input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
+<button class="btn" type="submit">Register</button></form>
+<p class="muted">A unique Student ID is generated automatically.</p></div>
+<div class="card"><form method="get" class="row"><label>Search<input name="q" value="{{ q }}" placeholder="ID, name, email or program"></label>
+<label>Program<select name="program"><option value="">All</option>{% for p in progs %}<option value="{{ p['id'] }}" {{ 'selected' if p['id']|string==prog }}>{{ p['code'] }}</option>{% endfor %}</select></label>
+<button class="btn secondary" type="submit">Search</button></form>
+<div class="tablewrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Program</th><th>Status</th><th></th></tr></thead><tbody>
+{% for s in rows %}<tr><td>{{ s['student_no'] }}</td><td>{{ s['name'] }}</td><td>{{ s['email'] }}</td><td>{{ s['program'] }}</td><td><span class="badge {{ 'ok' if s['active'] else 'bad' }}">{{ 'Active' if s['active'] else 'Inactive' }}</span></td><td><a href="{{ url_for('admin.student_detail', uid=s['id']) }}">Open</a></td></tr>{% else %}<tr><td colspan="6">No students found.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}Announcements{% endblock %}
+{% block content %}
+<h1>Announcements</h1>
+{% if manage %}<p><a class="btn" href="{{ url_for('comms.new') }}">New announcement</a>
+{% for s in ['published','draft','archived'] %}<a class="btn small {{ '' if show==s else 'secondary' }}" href="{{ url_for('comms.announcements', show=s) }}">{{ s|capitalize }}</a> {% endfor %}</p>{% endif %}
+<form method="get" class="row"><input type="hidden" name="show" value="{{ show }}"><label>Category<select name="category"><option value="">All</option>{% for c in cats %}<option {{ 'selected' if c==cat }}>{{ c }}</option>{% endfor %}</select></label><button class="btn secondary" type="submit">Filter</button></form>
+{% for a in rows %}<div class="card"><h2><a href="{{ url_for('comms.view_announcement', aid=a['id']) }}">{{ a['title'] }}</a></h2>
+<p class="muted">{{ a['category'] }} · {{ audiences[a['audience']] }} · {{ (a['publish_date'] or 'not published')|dt }} · {{ a['author'] }}</p>
+<p>{{ a['body'][:240] }}{{ '…' if a['body']|length > 240 }}</p></div>{% else %}<div class="card">No announcements.</div>{% endfor %}
+{% endblock %}

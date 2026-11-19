@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block title %}Exam results{% endblock %}
+{% block content %}
+<h1>{{ e['code'] }} {{ e['exam_type'] }} – results</h1>
+<p class="muted">{{ e['exam_date'] }} · Max {{ e['max_marks']|num }} · {{ e['status'] }}</p>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Marks</th><th>%</th><th>Grade</th></tr></thead><tbody>
+{% for r, pct, gr in rows %}<tr><td>{{ r['student_no'] }}</td><td>{{ r['name'] }}</td><td>{{ r['marks']|num }}</td><td>{{ '%.2f'|format(pct) }}</td><td>{{ gr }}</td></tr>{% else %}<tr><td colspan="5">No marks.</td></tr>{% endfor %}</tbody></table></div>
+<a class="btn secondary" href="{{ url_for('exams.results') }}">Back</a></div>
+{% endblock %}

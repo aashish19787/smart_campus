@@ -1,0 +1,18 @@
+{% extends 'base.html' %}{% block title %}Course {{ c['code'] }}{% endblock %}
+{% block content %}
+<h1>{{ c['code'] }} – {{ c['name'] }}</h1>
+<div class="grid2">
+<div class="card"><h2>Details &amp; teacher</h2><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="update">
+<label>Name<input name="name" value="{{ c['name'] }}" required></label>
+<label>Program<select name="program_id"><option value="">—</option>{% for p in progs %}<option value="{{ p['id'] }}" {{ 'selected' if p['id']==c['program_id'] }}>{{ p['code'] }}</option>{% endfor %}</select></label>
+<label>Teacher<select name="teacher_id"><option value="">— unassigned —</option>{% for t in teachers %}<option value="{{ t['id'] }}" {{ 'selected' if t['id']==c['teacher_id'] }}>{{ t['name'] }}</option>{% endfor %}</select></label>
+<label>Semester<input name="semester" value="{{ c['semester'] }}"></label>
+<button class="btn" type="submit">Save</button> <a class="btn secondary" href="{{ url_for('admin.courses') }}">Back</a></form></div>
+<div class="card"><h2>Enroll students</h2><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="enroll">
+<label>Student IDs (space or comma separated)<input name="student_nos" placeholder="HCIT-2026-0001 HCIT-2026-0002"></label>
+{% if c['program_id'] %}<label class="check"><input type="checkbox" name="whole_program" value="1"> Enroll every student of this course's program</label>{% endif %}
+<button class="btn" type="submit">Enroll</button></form></div>
+</div>
+<div class="card"><h2>Enrolled students ({{ roster|length }})</h2><div class="tablewrap"><table><thead><tr><th>Student ID</th><th>Name</th><th></th></tr></thead><tbody>
+{% for s in roster %}<tr><td>{{ s['student_no'] }}</td><td>{{ s['name'] }}</td><td><form method="post" class="inline" data-confirm="Remove this student from the course?"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="unenroll"><input type="hidden" name="student_id" value="{{ s['id'] }}"><button class="link danger" type="submit">Remove</button></form></td></tr>{% else %}<tr><td colspan="3">No students enrolled.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% block title %}Attendance summary{% endblock %}
+{% block content %}
+<h1>Attendance summary – {{ course['code'] }} {{ course['name'] }}</h1>
+<div class="card"><p><a class="btn secondary" href="{{ url_for('reports.show', kind='attendance', course=course['id'], format='pdf') }}">Download PDF</a>
+<a class="btn secondary" href="{{ url_for('reports.show', kind='attendance', course=course['id'], format='csv') }}">Download CSV</a>
+{% if current_user['role']=='teacher' %}<a class="btn" href="{{ url_for('attendance.take', course_id=course['id']) }}">Record attendance</a>{% endif %}</p>
+<div class="tablewrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Present</th><th>Late</th><th>Absent</th><th>Sessions</th><th>%</th><th></th></tr></thead><tbody>
+{% for s, st, low in rows %}<tr class="{{ 'lowrow' if low }}"><td>{{ s['student_no'] }}</td><td>{{ s['name'] }}</td><td>{{ st.present }}</td><td>{{ st.late }}</td><td>{{ st.absent }}</td><td>{{ st.total }}</td>
+<td>{% if st.pct is none %}-{% else %}<span class="badge {{ 'bad' if low else 'ok' }}">{{ '%.1f'|format(st.pct) }}%{{ ' LOW' if low }}</span>{% endif %}</td><td><a href="{{ url_for('attendance.history', course_id=course['id'], student=s['id']) }}">History</a></td></tr>{% else %}<tr><td colspan="8">No students enrolled.</td></tr>{% endfor %}
+</tbody></table></div><p class="muted">Students below {{ thr|num }}% are flagged LOW and receive warnings automatically.</p></div>
+<div class="card"><h2>Recorded sessions</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Attended</th></tr></thead><tbody>
+{% for s in sessions %}<tr><td>{% if current_user['role']=='teacher' %}<a href="{{ url_for('attendance.take', course_id=course['id'], date=s['date']) }}">{{ s['date'] }}</a>{% else %}{{ s['date'] }}{% endif %}</td><td>{{ s['p'] }} / {{ s['t'] }}</td></tr>{% else %}<tr><td colspan="2">No sessions recorded.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

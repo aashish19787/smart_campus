@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}Backups{% endblock %}
+{% block content %}
+<h1>Backup &amp; recovery</h1>
+<div class="card"><p>Automatic backups run every 24 hours while the server is running (last 14 are kept). Each backup is integrity-checked.</p>
+<form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="backup"><button class="btn" type="submit">Create backup now</button></form></div>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>File</th><th>Created</th><th>Size</th><th>Integrity</th><th></th></tr></thead><tbody>
+{% for b in items %}<tr><td>{{ b.name }}</td><td>{{ b.time }}</td><td>{{ b.size_kb }} KB</td><td><span class="badge {{ 'ok' if b.ok else 'bad' }}">{{ 'OK' if b.ok else 'DAMAGED' }}</span></td>
+<td><form method="post" class="inline" data-confirm="Restore the database from this backup? Changes made after the backup will be lost."><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="restore"><input type="hidden" name="name" value="{{ b.name }}"><button class="link danger" type="submit">Restore</button></form></td></tr>{% else %}<tr><td colspan="5">No backups yet.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block title %}Examination{% endblock %}
+{% block content %}
+<h1>{{ 'Edit' if e else 'Schedule' }} examination</h1>
+<div class="card narrow"><form method="post"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+{% if e %}<p><b>{{ e['code'] }} – {{ e['course_name'] }}</b></p>{% else %}<label>Course<select name="course_id" required>{% for c in courses %}<option value="{{ c['id'] }}">{{ c['code'] }} – {{ c['name'] }}</option>{% endfor %}</select></label>{% endif %}
+<label>Examination type<select name="exam_type">{% for t in types %}<option {{ 'selected' if e and e['exam_type']==t }}>{{ t }}</option>{% endfor %}</select></label>
+<label>Date<input type="date" name="exam_date" value="{{ e['exam_date'] if e else '' }}" required></label>
+<label>Time<input type="time" name="exam_time" value="{{ e['exam_time'] if e else '10:00' }}" required></label>
+<label>Maximum marks<input type="number" name="max_marks" step="any" min="1" value="{{ e['max_marks']|num if e else 100 }}" required></label>
+<button class="btn" type="submit">Save</button> <a class="btn secondary" href="{{ url_for('exams.index') }}">Cancel</a></form></div>
+{% endblock %}
